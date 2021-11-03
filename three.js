@@ -1,6 +1,5 @@
-onResize()
+
 window.addEventListener("load",init);
-window.addEventListener("resize",onResize);
 
 const width=960;
 const height=540;
@@ -8,6 +7,7 @@ const height=540;
 function init(){
 	const renderer=new THREE.WebGLRenderer({canvas:document.querySelector("#myCanvas")});
 	renderer.setSize(width,height);
+	window.addEventListener('resize', onResize);
 
 	const scene=new THREE.Scene();
 
@@ -26,7 +26,7 @@ function init(){
 
 	for(let i=0;i<10;i++){
 		const material=new THREE.MeshNormalMaterial();
-		const geometry=new THREE.sphereGeometry(30,30,30);
+		const geometry=new THREE.SphereGeometry(30,30,30);
 		const mesh=new THREE.Mesh(geometry,material);
 
 		const radian=2*Math.PI*i/10;
@@ -39,44 +39,47 @@ function init(){
 	particle();
 	tick();
 
-}
-
-function onResize(){
-	const width=window.innerWidth;
-	const height=window.innerHeight;
-
-	renderer.setPixelRatio(window.devicePixelRatio);
-	renderer.setSize(width,height);
-
-	camera.aspect=width/height;
-	camera.updateProjectionMatrix();
-}
-
-function tick(){
-	group.rotation.y+=0.01;
-
-	renderer.render(scene,camera);
-	requestAnimationFrame(tick);
-}
-
-function particle(){
-	const SIZE=3000;
-	const LENGTH=1000;
-
-	const vertices=[];
-	for(let i=0;i<LENGTH;i++){
-		const x=SIZE*(Math.random()-0.5);
-		const y=SIZE*(Math.random()-0.5);
-		const z=SIZE*(Math.random()-0.5);
-
-		vertices.push(x,y,z);
+	function tick(){
+		group.rotation.y+=0.01;
+	
+		renderer.render(scene,camera);
+		requestAnimationFrame(tick);
+	}
+	
+	function particle(){
+		const SIZE=3000;
+		const LENGTH=1000;
+	
+		const vertices=[];
+		for(let i=0;i<LENGTH;i++){
+			const x=SIZE*(Math.random()-0.5);
+			const y=SIZE*(Math.random()-0.5);
+			const z=SIZE*(Math.random()-0.5);
+	
+			vertices.push(x,y,z);
+		}
+	
+		const geometry=new THREE.BufferGeometry();
+		geometry.setAttribute("position",new THREE.Float32BufferAttribute(vertices,-3));
+	
+		const material=new THREE.PointsMaterial({size:10,color:0xffffff,});
+	
+		const mesh=new THREE.Points(geometry,material);
+		scene.add(mesh);
 	}
 
-	const geometry=new THREE.BufferGeometry();
-	geometry.setAttribute("position",new THREE.Float32BufferAttribute(vertices,-3));
-
-	const material=new THREE.PointsMaterial({size:10,color:0xffffff,});
-
-	const mesh=new THREE.Points(geometry,material);
-	scene.add(mesh);
+	function onResize(){
+		const width=window.innerWidth;
+		const height=window.innerHeight;
+	
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setSize(width,height);
+	
+		camera.aspect=width/height;
+		camera.updateProjectionMatrix();
+	}
 }
+
+
+
+
